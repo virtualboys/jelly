@@ -13,14 +13,17 @@ public class MoveMesh : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		//rigidBody.AddForce (new Vector3 (0, 0, 0));
+        transform.position = rigidbody.transform.position;
+        transform.rotation = rigidbody.transform.rotation;
 	}
 	void FixedUpdate() {
-		transform.position = rigidbody.transform.position;
-		transform.rotation	= rigidbody.transform.rotation;
+        
+		
+        //Debug.Log("rigid body:" + rigidbody.transform.position + "game object position:" + transform.position);
 	}
 
 	public void dragObj(Vector3 grabPos, Vector3 force) {
 		rigidbody.AddForceAtPosition (force, grabPos);
-		Debug.Log (force.magnitude);
+		//Debug.Log (force.magnitude);
 	}
 }

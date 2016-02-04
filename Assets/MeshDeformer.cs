@@ -30,6 +30,7 @@ public class MeshDeformer : MonoBehaviour {
 		getPoles ();
 	}
 
+    bool set = false;
 	void Update () {
 		uniformScale = transform.localScale.x;
 		for (int i = 0; i < displacedVertices.Length; i++) {
@@ -38,10 +39,14 @@ public class MeshDeformer : MonoBehaviour {
 		deformingMesh.vertices = displacedVertices;
 		deformingMesh.RecalculateNormals();
 
-		Vector3 leftPole = transform.TransformPoint (displacedVertices [leftPoleInd]);
-		Vector3	rightPole = transform.TransformPoint (displacedVertices [rightPoleInd]);
-		material.SetVector("_LeftPole", new Vector4(leftPole.x, leftPole.y, leftPole.z));
-		material.SetVector("_RightPole", new Vector4(rightPole.x, rightPole.y, rightPole.z));
+        if (!set)
+        {
+            Vector3 leftPole = transform.TransformPoint(displacedVertices[leftPoleInd]);
+            Vector3 rightPole = transform.TransformPoint(displacedVertices[rightPoleInd]);
+            material.SetVector("_LeftPole", new Vector4(leftPole.x, leftPole.y, leftPole.z));
+            material.SetVector("_RightPole", new Vector4(rightPole.x, rightPole.y, rightPole.z));
+            set = true;
+        }
 	}
 
 	void UpdateVertex (int i) {
@@ -52,6 +57,7 @@ public class MeshDeformer : MonoBehaviour {
 		velocity *= 1f - damping * Time.deltaTime;
 		vertexVelocities[i] = velocity;
 		displacedVertices[i] += velocity * (Time.deltaTime / uniformScale);
+        originalVertices[i] += .1f * velocity * (Time.deltaTime / uniformScale);
 	}
 
 	public void AddDeformingForce (int vertexInd, Vector3 pullDir, float forceMag) {
