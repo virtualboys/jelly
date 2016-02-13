@@ -4,12 +4,24 @@ public class MeshDeformerInput : MonoBehaviour {
 	
 	private float force = -10f;
 	private float forceOffset = 1f;
+    
+    public MouseLook mouseLookX;
+    public MouseLook mouseLookY;
+    public FirstPersonDrifter fpd;
+    private HeadBob headBob;
 
+    public float sRamp=3f;
 	private int selectedVertex;
 	private MeshDeformer selectedMesh;
 	private MoveMesh meshMover;
-	
+
+    void Start()
+    {
+        headBob = GetComponentInChildren<HeadBob>();
+    }
+
 	void Update () {
+
 		if (Input.GetMouseButton (0)) {
 			if (selectedMesh == null)
 				GetMesh ();
@@ -21,6 +33,20 @@ public class MeshDeformerInput : MonoBehaviour {
 			meshMover = null;
 			selectedVertex = -1;
 		}
+
+        if(selectedMesh!=null){
+            float distance=(transform.position - selectedMesh.transform.position).magnitude;
+            float a = 1 / distance;
+            float b = (1.0f - .1f) / (1.0f - 10.0f);
+           // mouseLook.sensMod = b * Mathf.Clamp(distance, 1, 10)+1;]
+            mouseLookX.sensMod = mouseLookY.sensMod = .2f;
+            fpd.speedMod = .25f;
+            headBob.bobMod = .5f;
+        } else {
+            mouseLookX.sensMod = mouseLookY.sensMod = 1;
+            fpd.speedMod = 1f;
+            headBob.bobMod = 1.0f;
+        }
 	}
 
 	void GetMesh () {

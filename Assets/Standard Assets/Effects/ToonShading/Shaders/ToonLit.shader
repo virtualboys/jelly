@@ -5,7 +5,7 @@ Shader "Toon/Lit" {
 		_LeftPole ("Left Pole", Vector) = (0,0,0)
 		_RightPole ("Right Pole", Vector)= (1,1,1)
 		_Ramp ("Toon Ramp (RGB)", 2D) = "gray" {} 
-		_WaveAmp ("Wave Amplitude", Float) = 1
+		_WaveAmp ("Wave Amplitude", Float) = .05
 	}
 
 	SubShader {
@@ -26,14 +26,14 @@ inline half4 LightingToonRamp (SurfaceOutput s, half3 lightDir, half atten)
 	lightDir = normalize(lightDir);
 	#endif
 	
-	half d = dot (s.Normal, lightDir)*0.5+0.5;
-	half3 ramp = tex2D (_Ramp, float2(d,0)).rgb;
+	half d = dot (s.Normal, lightDir)*0.5 + 0.5;
+	half3 ramp = tex2D (_Ramp, float2(d,d)).rgb;
 	
 	half4 c;
 //	if(atten < 1)
 //		c.rgb = s.Albedo * _LightColor0.rgb * (atten * 2);
 //	else
-	c.rgb = s.Albedo * _LightColor0.rgb * ramp;// * (atten * 2);
+		c.rgb = s.Albedo * _LightColor0.rgb * ramp * (atten * 2);
 	c.a = 0;
 	return c;
 }
@@ -58,7 +58,7 @@ void vert (inout appdata_full v) {
 	float d = dot(v.vertex.xyz - left, axis) / dot(axis, axis);
 	//float noise = cos(v.texcoord.y*2000) + sin(v.texcoord.x*2000);
     //v.vertex.xyz += .05*noise* v.normal;
-    v.vertex.y += .05*_WaveAmp*sin(_Time.y +d * 3.14*6);
+    v.vertex.y += _WaveAmp * sin(d * 3.14 * 6 + _Time.y);
 }
 
 void surf (Input IN, inout SurfaceOutput o) {

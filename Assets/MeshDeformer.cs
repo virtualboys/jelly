@@ -57,7 +57,8 @@ public class MeshDeformer : MonoBehaviour {
 		velocity *= 1f - damping * Time.deltaTime;
 		vertexVelocities[i] = velocity;
 		displacedVertices[i] += velocity * (Time.deltaTime / uniformScale);
-        originalVertices[i] += .1f * velocity * (Time.deltaTime / uniformScale);
+        //originalVertices[i] += .1f * velocity * (Time.deltaTime / uniformScale);
+        //originalVertices[i] += .1f * displacement * (Time.deltaTime / uniformScale);
 	}
 
 	public void AddDeformingForce (int vertexInd, Vector3 pullDir, float forceMag) {
