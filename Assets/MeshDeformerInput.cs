@@ -7,7 +7,8 @@ public class MeshDeformerInput : MonoBehaviour {
     
     public MouseLook mouseLookX;
     public MouseLook mouseLookY;
-    public FirstPersonDrifter fpd;
+    private FirstPersonDrifter fpd;
+    public float pullStrength = 10f;
     private HeadBob headBob;
 
     public float sRamp=3f;
@@ -18,31 +19,48 @@ public class MeshDeformerInput : MonoBehaviour {
     void Start()
     {
         headBob = GetComponentInChildren<HeadBob>();
+        fpd = GetComponent<FirstPersonDrifter>();
     }
 
 	void Update () {
 
-		if (Input.GetMouseButton (0)) {
-			if (selectedMesh == null)
-				GetMesh ();
-			else {
-				DeformMesh ();
-			}
-		} else {
-			selectedMesh = null;
-			meshMover = null;
-			selectedVertex = -1;
-		}
+        if (Input.GetAxis("Right") > .5f)
+        {
+            if (selectedMesh == null)
+            {
+                Debug.Log("GET");
+                GetMesh();
+            }
+            else
+            {
+                Debug.Log("MOVE");
+                DeformMesh();
+            }
+        }
+        else
+        {
+            Debug.Log("NULLLLLLLLL");
+            selectedMesh = null;
+            meshMover = null;
+            selectedVertex = -1;
+        }
 
-        if(selectedMesh!=null){
-            float distance=(transform.position - selectedMesh.transform.position).magnitude;
-            float a = 1 / distance;
-            float b = (1.0f - .1f) / (1.0f - 10.0f);
-           // mouseLook.sensMod = b * Mathf.Clamp(distance, 1, 10)+1;]
+        if (selectedMesh != null)
+        {
+           
+            float forceMag=Input.GetAxis("Left") *pullStrength*Time.deltaTime;
+            meshMover.dragObj(meshMover.transform.position,-transform.forward*forceMag);
+
+            //float distance = (transform.position - selectedMesh.transform.position).magnitude;
+            //float a = 1 / distance;
+            //float b = (1.0f - .1f) / (1.0f - 10.0f);
+            // mouseLook.sensMod = b * Mathf.Clamp(distance, 1, 10)+1;]
             mouseLookX.sensMod = mouseLookY.sensMod = .2f;
             fpd.speedMod = .25f;
             headBob.bobMod = .5f;
-        } else {
+        }
+        else
+        {
             mouseLookX.sensMod = mouseLookY.sensMod = 1;
             fpd.speedMod = 1f;
             headBob.bobMod = 1.0f;
@@ -50,7 +68,7 @@ public class MeshDeformerInput : MonoBehaviour {
 	}
 
 	void GetMesh () {
-		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray inputRay = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 		RaycastHit hit;
 		
 		if (Physics.Raycast(inputRay, out hit)) {
