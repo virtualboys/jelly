@@ -2,7 +2,8 @@
 
 public class MeshDeformerInput : MonoBehaviour {
 	
-	private float force = -10f;
+	public float dragForce = 10f;
+    public float deformForce = 1f;
 	private float forceOffset = 1f;
     
     public MouseLook mouseLookX;
@@ -22,24 +23,21 @@ public class MeshDeformerInput : MonoBehaviour {
         fpd = GetComponent<FirstPersonDrifter>();
     }
 
-	void Update () {
+	void FixedUpdate () {
 
         if (Input.GetAxis("Right") > .5f)
         {
             if (selectedMesh == null)
             {
-                Debug.Log("GET");
                 GetMesh();
             }
             else
             {
-                Debug.Log("MOVE");
                 DeformMesh();
             }
         }
         else
         {
-            Debug.Log("NULLLLLLLLL");
             selectedMesh = null;
             meshMover = null;
             selectedVertex = -1;
@@ -48,15 +46,15 @@ public class MeshDeformerInput : MonoBehaviour {
         if (selectedMesh != null)
         {
            
-            float forceMag=Input.GetAxis("Left") *pullStrength*Time.deltaTime;
-            meshMover.dragObj(meshMover.transform.position,-transform.forward*forceMag);
+            float forceMag=Input.GetAxis("Left") *pullStrength;
+            meshMover.dragObj(meshMover.transform.position,-Camera.main.transform.forward*forceMag);
 
             //float distance = (transform.position - selectedMesh.transform.position).magnitude;
             //float a = 1 / distance;
             //float b = (1.0f - .1f) / (1.0f - 10.0f);
             // mouseLook.sensMod = b * Mathf.Clamp(distance, 1, 10)+1;]
-            mouseLookX.sensMod = mouseLookY.sensMod = .2f;
-            fpd.speedMod = .25f;
+            mouseLookX.sensMod = mouseLookY.sensMod = .5f;
+            fpd.speedMod = .5f;
             headBob.bobMod = .5f;
         }
         else
@@ -95,15 +93,14 @@ public class MeshDeformerInput : MonoBehaviour {
 	void DeformMesh () {
 		Vector3 grabPos = selectedMesh.getVertPos (selectedVertex);
 		Vector3 vertPos= Camera.main.WorldToScreenPoint(grabPos);
-		Vector3 force = Input.mousePosition - vertPos;
+		Vector3 force = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
 		Vector3 worldForce = (force.x * Camera.main.transform.right);
 		worldForce += force.y * Camera.main.transform.up;
 		worldForce.Normalize ();
 
-		float forceMag = force.magnitude/5f;
-		//Debug.Log (forceMag);
-		selectedMesh.AddDeformingForce (selectedVertex, worldForce.normalized, forceMag);
+		float forceMag = force.magnitude;
+		selectedMesh.AddDeformingForce (selectedVertex, worldForce, forceMag * deformForce);
 
-		meshMover.dragObj (grabPos, worldForce * Time.deltaTime * forceMag);
+		meshMover.dragObj (grabPos, worldForce * Time.deltaTime * forceMag * dragForce);
 	}
 }
