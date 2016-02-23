@@ -13,7 +13,7 @@ Shader "Toon/Lit" {
 		LOD 200
 		
 CGPROGRAM
-#pragma surface surf ToonRamp fullforwardshadows addshadow vertex:vert
+#pragma surface surf ToonRamp fullforwardshadows addshadow
 
 sampler2D _Ramp;
 
@@ -33,8 +33,8 @@ inline half4 LightingToonRamp (SurfaceOutput s, half3 lightDir, half atten)
 //	if(atten < 1)
 //		c.rgb = s.Albedo * _LightColor0.rgb * (atten * 2);
 //	else
-		c.rgb = s.Albedo * _LightColor0.rgb * ramp * (atten * 2);
-	c.a = 0;
+		c.rgb = _LightColor0.rgb * ramp;
+	c.a = 1;
 	return c;
 }
 
@@ -49,17 +49,6 @@ float _WaveAmp;
 struct Input {
 	float2 uv_MainTex : TEXCOORD0;
 };
-
-void vert (inout appdata_full v) {
-	float3 left = float3(_LeftPole.x, _LeftPole.y, _LeftPole.z);
-	float3 right = float3(_RightPole.x, _RightPole.y, _RightPole.z);
-
-	float3 axis = right - left;
-	float d = dot(v.vertex.xyz - left, axis) / dot(axis, axis);
-	//float noise = cos(v.texcoord.y*2000) + sin(v.texcoord.x*2000);
-    //v.vertex.xyz += .05*noise* v.normal;
-    v.vertex.y += _WaveAmp * sin(d * 3.14 * 6 + _Time.y);
-}
 
 void surf (Input IN, inout SurfaceOutput o) {
 	half4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;

@@ -28,10 +28,14 @@ public class MeshDeformer : MonoBehaviour {
 
 		MeshRenderer mesh = GetComponent<MeshRenderer> ();
 		material = mesh.material;
-		getPoles ();
+		
+        getPoles ();
+        Vector3 leftPole = transform.TransformPoint(displacedVertices[leftPoleInd]);
+        Vector3 rightPole = transform.TransformPoint(displacedVertices[rightPoleInd]);
+        material.SetVector("_LeftPole", new Vector4(leftPole.x, leftPole.y, leftPole.z));
+        material.SetVector("_RightPole", new Vector4(rightPole.x, rightPole.y, rightPole.z));
 	}
 
-    bool set = false;
 	void Update () {
 		uniformScale = transform.localScale.x;
 		for (int i = 0; i < displacedVertices.Length; i++) {
@@ -40,15 +44,6 @@ public class MeshDeformer : MonoBehaviour {
         //deformingMesh.Clear();
 		deformingMesh.vertices = displacedVertices;
 		deformingMesh.RecalculateNormals();
-
-        if (!set)
-        {
-            Vector3 leftPole = transform.TransformPoint(displacedVertices[leftPoleInd]);
-            Vector3 rightPole = transform.TransformPoint(displacedVertices[rightPoleInd]);
-            material.SetVector("_LeftPole", new Vector4(leftPole.x, leftPole.y, leftPole.z));
-            material.SetVector("_RightPole", new Vector4(rightPole.x, rightPole.y, rightPole.z));
-            set = true;
-        }
 	}
 
 	void UpdateVertex (int i) {
@@ -66,10 +61,21 @@ public class MeshDeformer : MonoBehaviour {
 
 	public void AddDeformingForce (int vertexInd, Vector3 pullDir, float forceMag) {
 		Vector3 point = deformingMesh.vertices [vertexInd];
-		for (int i = 0; i < displacedVertices.Length; i++) {
-			AddForceToVertex(i, point, pullDir, forceMag);
-		}
+		AddDeformingForce(point, pullDir, forceMag);
 	}
+    public void AddDeformingForceWorld(Vector3 point, Vector3 pullDir, float forceMag)
+    {
+        point = transform.InverseTransformPoint(point);
+        AddDeformingForce(point, pullDir, forceMag);
+    }
+
+    public void AddDeformingForce(Vector3 point, Vector3 pullDir, float forceMag)
+    {
+        for (int i = 0; i < displacedVertices.Length; i++)
+        {
+            AddForceToVertex(i, point, pullDir, forceMag);
+        }
+    }
 
 	void AddForceToVertex (int i, Vector3 point, Vector3 pullDir, float forceMag) {
 		//point = transform.InverseTransformPoint (point);
@@ -85,6 +91,11 @@ public class MeshDeformer : MonoBehaviour {
 	public Vector3 getVertPos (int vertexInd) {
 		return transform.TransformPoint(displacedVertices [vertexInd]);
 	}
+
+    public Vector3 getVertNormal(int vertexInd)
+    {
+        return transform.TransformVector(deformingMesh.normals[vertexInd]);
+    }
 
 	void getPoles () {
 		float leftPos = originalVertices [0].x;

@@ -2,8 +2,9 @@
 
 public class MeshDeformerInput : MonoBehaviour {
 	
-	public float dragForce = 10f;
+	public float pullForce = 10f;
     public float deformForce = 1f;
+    public float pokeForce = 10f;
 	private float forceOffset = 1f;
     
     public MouseLook mouseLookX;
@@ -45,17 +46,14 @@ public class MeshDeformerInput : MonoBehaviour {
 
         if (selectedMesh != null)
         {
-           
-            float forceMag=Input.GetAxis("Left") *pullStrength;
-            meshMover.dragObj(meshMover.transform.position,-Camera.main.transform.forward*forceMag);
-
-            //float distance = (transform.position - selectedMesh.transform.position).magnitude;
-            //float a = 1 / distance;
-            //float b = (1.0f - .1f) / (1.0f - 10.0f);
-            // mouseLook.sensMod = b * Mathf.Clamp(distance, 1, 10)+1;]
+            pull();
+            
             mouseLookX.sensMod = mouseLookY.sensMod = .5f;
             fpd.speedMod = .5f;
             headBob.bobMod = .5f;
+
+            if (Input.GetButton("poke"))
+                poke();
         }
         else
         {
@@ -77,15 +75,9 @@ public class MeshDeformerInput : MonoBehaviour {
 
 				MeshFilter mesh = hit.collider.GetComponent<MeshFilter>();
 				int[] meshTris = mesh.mesh.triangles;
-				//mesh
-//				Debug.Log ("tris length " + meshTris.Length);
-//				Debug.Log ("tri ind " + hit.triangleIndex);
-				//Debug.Log
+
 				selectedVertex = meshTris[hit.triangleIndex*3];
 
-//				Vector3 point = hit.point;
-//				point += hit.normal * forceOffset;
-//				deformer.AddDeformingForce(point, force);
 			}
 		}
 	}
@@ -101,6 +93,19 @@ public class MeshDeformerInput : MonoBehaviour {
 		float forceMag = force.magnitude;
 		selectedMesh.AddDeformingForce (selectedVertex, worldForce, forceMag * deformForce);
 
-		meshMover.dragObj (grabPos, worldForce * Time.deltaTime * forceMag * dragForce);
+		meshMover.dragObj (grabPos, worldForce * Time.deltaTime * forceMag * pullForce);
 	}
+
+    void pull()
+    {
+        float forceMag = Input.GetAxis("Left") * pullStrength;
+        Vector3 dir = transform.position - selectedMesh.transform.position;
+        meshMover.dragObj(meshMover.transform.position, dir * forceMag);
+    }
+
+    void poke()
+    {
+        Vector3 dir = -selectedMesh.getVertNormal(selectedVertex);
+        selectedMesh.AddDeformingForce(selectedVertex, dir, pokeForce);
+    }
 }
