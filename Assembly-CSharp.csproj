@@ -65,6 +65,7 @@
      <Compile Include="Assets\MoveLight.cs" />
      <Compile Include="Assets\MoveMesh.cs" />
      <Compile Include="Assets\RoundedCube.cs" />
+     <Compile Include="Assets\ThirdPersonController.cs" />
      <Compile Include="Assets\collisionJiggle.cs" />
      <Compile Include="Assets\teleport.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
