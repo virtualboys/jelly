@@ -5,7 +5,7 @@ public class MeshDeformer : MonoBehaviour {
 
 	public float springForce = 20f;
 	public float damping = 5f;
-    public float deformFalloff = 1f;
+    public const float deformFalloff = 1f;
 
 	Mesh deformingMesh;
 	Vector3[] originalVertices, displacedVertices;
@@ -13,6 +13,7 @@ public class MeshDeformer : MonoBehaviour {
 
 	float uniformScale = .1f;
 
+    MeshRenderer meshRenderer;
 	Material material;
 	int leftPoleInd = 0;
 	int rightPoleInd = 0;
@@ -26,8 +27,8 @@ public class MeshDeformer : MonoBehaviour {
 		}
 		vertexVelocities = new Vector3[originalVertices.Length];
 
-		MeshRenderer mesh = GetComponent<MeshRenderer> ();
-		material = mesh.material;
+        meshRenderer = GetComponent<MeshRenderer>();
+        material = meshRenderer.material;
 		
         getPoles ();
         Vector3 leftPole = transform.TransformPoint(displacedVertices[leftPoleInd]);
@@ -46,6 +47,16 @@ public class MeshDeformer : MonoBehaviour {
 		deformingMesh.RecalculateNormals();
 	}
 
+    public void SelectMesh(Material selectedMat)
+    {
+        meshRenderer.material = selectedMat;
+    }
+
+    public void DeselectMesh()
+    {
+        meshRenderer.material = material;
+    }
+
 	void UpdateVertex (int i) {
 		Vector3 velocity = vertexVelocities[i];
 		Vector3 displacement = displacedVertices[i] - originalVertices[i];
@@ -59,29 +70,29 @@ public class MeshDeformer : MonoBehaviour {
         //originalVertices[i] += .1f * displacement * (Time.deltaTime / uniformScale);
 	}
 
-	public void AddDeformingForce (int vertexInd, Vector3 pullDir, float forceMag) {
+	public void AddDeformingForce (int vertexInd, Vector3 pullDir, float forceMag, float falloff = deformFalloff) {
 		Vector3 point = deformingMesh.vertices [vertexInd];
-		AddDeformingForce(point, pullDir, forceMag);
+		AddDeformingForce(point, pullDir, forceMag, falloff);
 	}
-    public void AddDeformingForceWorld(Vector3 point, Vector3 pullDir, float forceMag)
+    public void AddDeformingForceWorld(Vector3 point, Vector3 pullDir, float forceMag, float falloff = deformFalloff)
     {
         point = transform.InverseTransformPoint(point);
-        AddDeformingForce(point, pullDir, forceMag);
+        AddDeformingForce(point, pullDir, forceMag, falloff);
     }
 
-    public void AddDeformingForce(Vector3 point, Vector3 pullDir, float forceMag)
+    public void AddDeformingForce(Vector3 point, Vector3 pullDir, float forceMag, float falloff)
     {
         for (int i = 0; i < displacedVertices.Length; i++)
         {
-            AddForceToVertex(i, point, pullDir, forceMag);
+            AddForceToVertex(i, point, pullDir, forceMag, falloff);
         }
     }
 
-	void AddForceToVertex (int i, Vector3 point, Vector3 pullDir, float forceMag) {
+	void AddForceToVertex (int i, Vector3 point, Vector3 pullDir, float forceMag, float falloff) {
 		//point = transform.InverseTransformPoint (point);
 		pullDir = transform.InverseTransformVector (pullDir);
 
-		Vector3 pointToVertex = deformFalloff * (displacedVertices[i] - point);
+		Vector3 pointToVertex = falloff * (displacedVertices[i] - point);
 		pointToVertex *= uniformScale;
 		float attenuatedForce = forceMag / (1.0f + pointToVertex.sqrMagnitude);
 		float velocity = attenuatedForce * Time.deltaTime;
