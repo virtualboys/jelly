@@ -46,8 +46,6 @@ public class MeshDeformerInput : MonoBehaviour {
     }
 
 	void FixedUpdate () {
-        
-
         if (Input.GetAxis("Right") > .5f && meshMover != null)
         {
             DeformMesh();

@@ -7,10 +7,12 @@ Shader "Toon/Basic" {
 
 
 	SubShader {
-		Tags { "RenderType"="Opaque" }
+		Tags { "Queue"="Transparent" "RenderType"="Transparent" }
 		Pass {
 			Name "BASE"
-			Cull Off
+			//Cull Off
+			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite On
 			
 			CGPROGRAM
 			#pragma vertex vert
@@ -53,7 +55,7 @@ Shader "Toon/Basic" {
 				fixed4 cube = texCUBE(_ToonShade, i.cubenormal);
 				fixed4 c = fixed4(2.0f * cube.rgb * col.rgb, col.a);
 				UNITY_APPLY_FOG(i.fogCoord, c);
-				return c;
+				return _Color;
 			}
 			ENDCG			
 		}

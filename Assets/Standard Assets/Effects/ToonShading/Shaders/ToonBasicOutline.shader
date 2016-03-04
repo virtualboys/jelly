@@ -39,7 +39,7 @@ Shader "Toon/Basic Outline" {
 	ENDCG
 
 	SubShader {
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType"="Transparent" }
 		UsePass "Toon/Basic/BASE"
 		Pass {
 			Name "OUTLINE"

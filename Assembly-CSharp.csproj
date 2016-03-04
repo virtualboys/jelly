@@ -66,7 +66,9 @@
      <Compile Include="Assets\MoveMesh.cs" />
      <Compile Include="Assets\RoundedCube.cs" />
      <Compile Include="Assets\ThirdPersonController.cs" />
+     <Compile Include="Assets\Wind.cs" />
      <Compile Include="Assets\collisionJiggle.cs" />
+     <Compile Include="Assets\display.cs" />
      <Compile Include="Assets\teleport.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
@@ -117,6 +119,7 @@
      <None Include="Assets\Standard Assets\Environment\Water (Basic)\Shaders\FXWaterBasic.shader" />
      <None Include="Assets\Standard Assets\Fonts\OpenSans\License!.txt" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\ChromaticAberrationShader.shader" />
+     <None Include="Assets\Shaders\Toony-Lighted.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\GlobalFog.shader" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAddSoft.shader" />
      <None Include="Assets\Standard Assets\Effects\ToonShading\Shaders\ToonLitOutline.shader" />

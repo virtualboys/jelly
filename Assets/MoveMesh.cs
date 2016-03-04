@@ -17,8 +17,9 @@ public class MoveMesh : MonoBehaviour {
         transform.rotation = rigidbody.transform.rotation;
 	}
 	void FixedUpdate() {
-        
-		
+
+        transform.position = rigidbody.transform.position;
+        transform.rotation = rigidbody.transform.rotation;
         //Debug.Log("rigid body:" + rigidbody.transform.position + "game object position:" + transform.position);
 	}
 
