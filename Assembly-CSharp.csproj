@@ -69,6 +69,7 @@
      <Compile Include="Assets\Wind.cs" />
      <Compile Include="Assets\collisionJiggle.cs" />
      <Compile Include="Assets\display.cs" />
+     <Compile Include="Assets\lookAtPlayer.cs" />
      <Compile Include="Assets\teleport.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
